@@ -1,0 +1,49 @@
+# Name des Workflows, der auf GitHub angezeigt wird
+name: Deploy to GitHub Pages
+
+# Dieser Workflow wird bei jedem Push auf den 'main'-Branch ausgeführt
+on:
+  push:
+    branches:
+      - main
+
+# Definiert die Berechtigungen, die der Workflow benötigt
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Definiert die Jobs, die ausgeführt werden
+jobs:
+  build:
+    runs-on: ubuntu-latest # Der Job läuft auf einem Linux-Server von GitHub
+    steps:
+      - name: Checkout your repository
+        uses: actions/checkout@v4
+
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20' # Verwendet die gleiche Node.js-Version
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build the React app
+        run: npm run build
+
+      - name: Upload the build artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./dist # Lädt den Inhalt des 'dist'-Ordners hoch
+
+  deploy:
+    needs: build # Dieser Job wartet, bis der 'build'-Job fertig ist
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4 # Veröffentlicht den hochgeladenen Inhalt
