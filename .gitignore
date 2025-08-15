@@ -1,0 +1,10 @@
+# Abhängigkeiten
+/node_modules
+
+# Build-Output
+/dist
+
+# Log-Dateien
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
